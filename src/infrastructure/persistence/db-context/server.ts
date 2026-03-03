@@ -34,4 +34,6 @@ app.use((error: Error, _req: Request, res: Response, _next: NextFunction) => {
   return res.status(500).send({ message: 'Internal server error.' })
 });
 
-app.listen(process.env.PORT || 3333)
+app.listen(process.env.PORT || 3333, () => {
+  console.log(`🚀 Servidor rodando na porta ${process.env.PORT || 3333}`)
+})
