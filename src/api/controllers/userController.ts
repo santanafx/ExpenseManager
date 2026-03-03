@@ -5,7 +5,12 @@ import { UserRepository } from '../../infrastructure/persistence/user/userReposi
 import { CreateUserUseCase } from '../../application/user/use-case/createUserUseCase.js'
 import { CreateUserInputModel } from '../../application/user/input-models/createUserInputModel.js'
 import { ROLE } from '../../domain/user/enums/role.js'
-import { createUserSchema } from '../validators/createUserSchema.js'
+import { createUserSchema } from '../validators/users/createUserSchema.js'
+import { loginSchema } from '../validators/users/loginSchema.js'
+import { LoginInputModel } from '../../application/user/input-models/loginInputModel.js'
+import jwt from 'jsonwebtoken'
+import { AutenticateUserUseCase } from '../../application/user/use-case/autenticateUserUseCase.js'
+import { InvalidUsersCredentials } from '../../application/common/errors/invalidUsersCredentials.js'
 
 const userRouter = Router()
 
@@ -44,6 +49,39 @@ userRouter.post('/users', async (req: Request, res: Response) => {
     return res.status(500).json({
       message: 'Internal server error'
     })
+  }
+})
+
+userRouter.post('/users/login', async (req: Request, res: Response) => {
+  try {
+    const validatedBody = loginSchema.parse(req.body)
+
+    const input = new LoginInputModel(
+      validatedBody.email,
+      validatedBody.password
+    )
+
+    const userRepository = new UserRepository()
+    const autenticate = new AutenticateUserUseCase(userRepository)
+
+    const { user } = await autenticate.execute(input.email, input.password)
+
+    const token = jwt.sign(
+      {
+        sub: user.id,
+        role: user.role
+      },
+      process.env.JWT_SECRET || 'secret',
+      { expiresIn: '7d' }
+    )
+
+    return res.status(200).send({ token })
+  } catch (error) {
+    if (error instanceof InvalidUsersCredentials) {
+      return res.status(400).send()
+    }
+
+    return res.status(500).send()
   }
 })
 
