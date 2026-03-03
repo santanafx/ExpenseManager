@@ -1,0 +1,7 @@
+node_modules
+build
+.env
+/src/generated/prisma
+README.md
+
+/src/generated/prisma
