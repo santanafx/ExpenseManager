@@ -1,7 +1,5 @@
 node_modules
 build
 .env
-/src/generated/prisma
+/src/infrastructure/persistence/prisma/generated
 README.md
-
-/src/generated/prisma
