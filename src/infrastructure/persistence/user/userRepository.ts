@@ -63,13 +63,7 @@ export class UserRepository implements IUserRepository {
   }
 
   private mapToDomain(prismaUser: UserModel): User {
-    const user = new User()
-    user.id = prismaUser.id
-    user.name = prismaUser.name
-    user.email = prismaUser.email
-    user.role = this.mapRoleFromDatabase(prismaUser.role)
-    user.password_hash = prismaUser.password_hash
-    user.created_at = prismaUser.created_at
+    const user = new User(prismaUser.id, prismaUser.name, prismaUser.email, this.mapRoleFromDatabase(prismaUser.role), prismaUser.password_hash, prismaUser.created_at)
     return user
   }
 
