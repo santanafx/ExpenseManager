@@ -14,7 +14,7 @@ import { JWTService } from '../../infrastructure/services/jwtService.js'
 
 const userRouter = Router()
 
-userRouter.post('/users', async (req: Request, res: Response) => {
+userRouter.post('/user', async (req: Request, res: Response) => {
   try {
     const validatedData = createUserSchema.parse(req.body)
 
@@ -52,7 +52,7 @@ userRouter.post('/users', async (req: Request, res: Response) => {
   }
 })
 
-userRouter.post('/users/login', async (req: Request, res: Response) => {
+userRouter.post('/user/login', async (req: Request, res: Response) => {
   try {
     const validatedBody = loginSchema.parse(req.body)
 
