@@ -14,28 +14,28 @@ export class User extends Entity {
     this.id = id
   }
 
-  get name(): string { return this._name }
-  get email(): string { return this._email }
-  get role(): ROLE { return this._role }
-  get password_hash(): string { return this._password_hash }
-  get created_at(): Date { return this._created_at }
+  public get name(): string { return this._name }
+  public get email(): string { return this._email }
+  public get role(): ROLE { return this._role }
+  public get password_hash(): string { return this._password_hash }
+  public get created_at(): Date { return this._created_at }
 
-  set name(value: string) {
+  private set name(value: string) {
     if (!value || value.trim().length === 0) {
       throw new Error('Name cannot be empty')
     }
     this._name = value
   }
 
-  set email(value: string) {
+  private set email(value: string) {
     this._email = value
   }
 
-  set role(value: ROLE) {
+  private set role(value: ROLE) {
     this._role = value
   }
 
-  set password_hash(value: string) {
+  private set password_hash(value: string) {
     this._password_hash = value
   }
 }
