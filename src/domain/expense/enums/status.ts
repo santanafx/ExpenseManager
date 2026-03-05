@@ -1,0 +1,6 @@
+export enum STATUS {
+  PENDING,
+  PAID,
+  CANCELLED,
+  OVERDUE,
+}
