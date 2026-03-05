@@ -8,7 +8,8 @@ export class User extends Entity {
     private _email: string,
     private _role: ROLE,
     private _password_hash: string,
-    private _created_at: Date = new Date()
+    private _created_at: Date = new Date(),
+    private _updated_at: Date
   ) {
     super()
     this.id = id
@@ -19,6 +20,7 @@ export class User extends Entity {
   public get role(): ROLE { return this._role }
   public get password_hash(): string { return this._password_hash }
   public get created_at(): Date { return this._created_at }
+  public get updated_at(): Date { return this._updated_at }
 
   private set name(value: string) {
     if (!value || value.trim().length === 0) {
