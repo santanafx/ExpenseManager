@@ -1,14 +1,15 @@
 import { Entity } from "../../common/entity.js"
+import type { STATUS } from "../enums/status.js"
 
 export class Expense extends Entity {
   constructor(
     id: string,
     private _description: string,
     private _amount: number,
-    private _category: string,
+    private _categoryId: string,
     private _date: Date,
     private _userId: string,
-    private _status: string,
+    private _status: STATUS,
     private _notes?: string,
     private _created_at: Date = new Date(),
     private _updated_at?: Date
@@ -31,11 +32,11 @@ export class Expense extends Entity {
     this._amount = value
   }
 
-  public get category(): string {
-    return this._category
+  public get categoryId(): string {
+    return this._categoryId
   }
-  private set category(value: string) {
-    this._category = value
+  public set categoryId(value: string) {
+    this._categoryId = value
   }
 
   public get date(): Date {
@@ -52,10 +53,10 @@ export class Expense extends Entity {
     this._userId = value
   }
 
-  public get status(): string {
+  public get status(): STATUS {
     return this._status
   }
-  private set status(value: string) {
+  private set status(value: STATUS) {
     this._status = value
   }
 
