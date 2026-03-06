@@ -1,6 +1,8 @@
 import { Router } from 'express'
-import { userRouter } from './userRoutes.js'
+import { userRouter } from '../controllers/userController.js'
+import { expenseRouter } from '../controllers/expenseController.js'
 
-export const routes = Router()
+export const router = Router()
 
-routes.use('/user', userRouter)
+router.use(userRouter)
+router.use(expenseRouter)
