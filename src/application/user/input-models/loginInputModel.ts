@@ -1,8 +1,5 @@
 export class LoginInputModel {
-  email: string
-  password: string
-
-  constructor(email: string, password: string) {
+  constructor(readonly email: string, readonly password: string) {
     this.email = email;
     this.password = password
   }
