@@ -40,15 +40,16 @@ model User {
 }
 
 model Expense {
-  id         String   @id @default(uuid())
-  amount     Int
-  categoryId String
-  date       DateTime
-  userId     String
-  status     Status   @default(PENDING)
-  notes      String
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now()) @updatedAt
+  id          String   @id @default(uuid())
+  description String
+  amount      Int
+  categoryId  String
+  date        DateTime
+  userId      String
+  status      Status   @default(PENDING)
+  notes       String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now()) @updatedAt
 
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
