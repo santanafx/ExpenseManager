@@ -12,7 +12,7 @@ import { AutenticateUserUseCase } from '../../application/user/use-case/autentic
 import { InvalidUsersCredentials } from '../../application/common/errors/invalidUsersCredentials.js'
 import { JWTService } from '../../infrastructure/services/jwtService.js'
 
-const userRouter = Router()
+export const userRouter = Router()
 
 userRouter.post('/user', async (req: Request, res: Response) => {
   try {
@@ -76,5 +76,3 @@ userRouter.post('/user/login', async (req: Request, res: Response) => {
     return res.status(500).send()
   }
 })
-
-export { userRouter }
