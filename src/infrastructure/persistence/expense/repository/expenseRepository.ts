@@ -10,6 +10,7 @@ export class ExpenseRepository implements IExpenseRepository {
     const createdExpense = await prisma.expense.create({
       data: {
         id: expense.id,
+        description: expense.description,
         amount: expense.amount,
         categoryId: expense.categoryId,
         date: expense.date,
@@ -23,11 +24,11 @@ export class ExpenseRepository implements IExpenseRepository {
     return this.mapToDomain(createdExpense)
   }
 
-  async findById(id: string): Promise<Expense | null> {
-    const prismaExpense = await prisma.expense.findUnique({
-      where: { id }
+  async findByDescription(description: string): Promise<Expense | null> {
+    const prismaExpense = await prisma.expense.findFirst({
+      where: { description }
     })
-    
+
     if (!prismaExpense) {
       return null
     }
