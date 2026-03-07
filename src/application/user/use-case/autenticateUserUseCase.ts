@@ -3,6 +3,7 @@ import type { User } from "../../../domain/user/entities/user.js";
 import type { UserRepository } from "../../../infrastructure/persistence/user/repository/userRepository.js";
 import { InvalidUsersCredentials } from "../../common/errors/invalidUsersCredentials.js";
 import type { IJWTService } from "../../common/interfaces/iJWTService.js";
+import { ROLE } from "../../../domain/user/enums/role.js";
 
 export class AutenticateUserUseCase {
   constructor(
@@ -21,7 +22,7 @@ export class AutenticateUserUseCase {
 
     const token = this.jwtService.sign({
       sub: user.id,
-      role: String(user.role)
+      role: ROLE[user.role]
     })
 
     return {

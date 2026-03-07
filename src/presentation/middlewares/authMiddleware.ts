@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express'
 import type { IJWTService } from '../../application/common/interfaces/iJWTService.js'
 
-export function AuthMiddleware(jwtService: IJWTService) {
+export function authMiddleware(jwtService: IJWTService) {
   return (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.replace('Bearer ', '')
 
