@@ -7,11 +7,15 @@ import { CategoryRepository } from "../../infrastructure/persistence/expense/rep
 import { CreateCategoryUseCase } from "../../application/expense/use-case/createCategoryUseCase.js";
 import z from "zod";
 import { CreateExpenseInputModel } from "../../application/expense/input-models/createExpenseInputModel.js";
-import { AuthMiddleware } from "../middlewares/authMiddleware.js";
+import { JWTService } from "../../infrastructure/services/jwtService.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
+
+const jwtService = new JWTService()
+const authMiddlewareJwt = authMiddleware(jwtService)
 
 export const expenseRouter = Router()
 
-expenseRouter.post('/expense', AuthMiddleware, (req: Request, res: Response) => {
+expenseRouter.post('/expense', authMiddlewareJwt, (req: Request, res: Response) => {
   try {
     const validatedExpense = createExpenseSchema.parse(req.body)
 
@@ -40,7 +44,7 @@ expenseRouter.post('/expense', AuthMiddleware, (req: Request, res: Response) => 
   }
 })
 
-expenseRouter.post('/expense/category', AuthMiddleware, adminOnly, (req: Request, res: Response) => {
+expenseRouter.post('/expense/category', authMiddlewareJwt, adminOnly, async (req: Request, res: Response) => {
   try {
     const validatedCategory = createExpenseCategorySchema.parse(req.body)
 
@@ -50,7 +54,7 @@ expenseRouter.post('/expense/category', AuthMiddleware, adminOnly, (req: Request
 
     const categoryRepository = new CategoryRepository()
     const categoryUseCase = new CreateCategoryUseCase(categoryRepository)
-    const categoryViewModel = categoryUseCase.execute(newCategory)
+    const categoryViewModel = await categoryUseCase.execute(newCategory)
 
     return res.status(201).json(categoryViewModel)
   } catch (error) {
