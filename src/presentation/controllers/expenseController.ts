@@ -49,7 +49,7 @@ expenseRouter.post('/expense/category', authMiddlewareJwt, adminOnly, async (req
     const validatedCategory = createExpenseCategorySchema.parse(req.body)
 
     const newCategory = new CreateCategoryInputModel(
-      validatedCategory.descrition ?? "", validatedCategory.name, validatedCategory.userId
+      validatedCategory.name, validatedCategory.description ?? "", validatedCategory.userId
     )
 
     const categoryRepository = new CategoryRepository()
