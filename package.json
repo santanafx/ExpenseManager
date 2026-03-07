@@ -9,6 +9,9 @@
     "prod": "node build/server.js",
     "build": "tsup src --out-dir build"
   },
+  "prisma": {
+    "seed": "tsx src/infrastructure/persistence/db-context/seed.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
