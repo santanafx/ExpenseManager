@@ -16,7 +16,7 @@ async function seed() {
     },
   })
 
-  console.log('Seed executado com sucesso.')
+  console.log('Seed executed with success')
 }
 
 seed()
