@@ -11,10 +11,15 @@ import { LoginInputModel } from '../../application/user/input-models/loginInputM
 import { AutenticateUserUseCase } from '../../application/user/use-case/autenticateUserUseCase.js'
 import { InvalidUsersCredentials } from '../../application/common/errors/invalidUsersCredentials.js'
 import { JWTService } from '../../infrastructure/services/jwtService.js'
+import { FindAllUsersUseCase } from '../../application/user/use-case/findAllUsersUseCase.js'
+import { authMiddleware } from '../middlewares/authMiddleware.js'
+
+const jwtService = new JWTService()
+const authMiddlewareJwt = authMiddleware(jwtService)
 
 export const userRouter = Router()
 
-userRouter.post('/user', async (req: Request, res: Response) => {
+userRouter.post('/user', authMiddlewareJwt, async (req: Request, res: Response) => {
   try {
     const validatedData = createUserSchema.parse(req.body)
 
@@ -74,5 +79,25 @@ userRouter.post('/user/login', async (req: Request, res: Response) => {
     }
 
     return res.status(500).send()
+  }
+})
+
+userRouter.get("/user/all-users", authMiddlewareJwt, async (req: Request, res: Response) => {
+  try {
+    const userRepository = new UserRepository()
+    const findAllUsersUseCase = new FindAllUsersUseCase(userRepository)
+    const allUsers = await findAllUsersUseCase.execute()
+
+    return res.status(200).json(allUsers)
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).json({
+        message: error.message
+      })
+    }
+
+    return res.status(500).json({
+      message: 'Internal server error'
+    })
   }
 })
