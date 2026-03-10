@@ -57,18 +57,16 @@ export class ExpenseRepository implements IExpenseRepository {
   }
 
   private mapToDomain(prismaExpense: ExpenseModel): Expense {
-    const expense = new Expense(
-      prismaExpense.id,
-      prismaExpense.notes,
-      prismaExpense.amount,
-      prismaExpense.categoryId,
-      prismaExpense.date,
-      prismaExpense.userId,
-      this.mapStatusFromDatabase(prismaExpense.status),
-      prismaExpense.notes,
-      prismaExpense.created_at,
-      prismaExpense.updated_at
-    )
-    return expense
+    return new Expense({
+      description: prismaExpense.description,
+      amount: prismaExpense.amount,
+      categoryId: prismaExpense.categoryId,
+      date: prismaExpense.date,
+      userId: prismaExpense.userId,
+      status: this.mapStatusFromDatabase(prismaExpense.status),
+      notes: prismaExpense.notes,
+      created_at: prismaExpense.created_at,
+      updated_at: prismaExpense.updated_at,
+    }, prismaExpense.id)
   }
 }
