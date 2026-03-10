@@ -1,18 +1,16 @@
 import type { Request, Response } from 'express'
 import { Router } from 'express'
 import { z } from 'zod'
-import { UserRepository } from '../../infrastructure/persistence/user/repository/userRepository.js'
-import { CreateUserUseCase } from '../../application/user/use-case/createUserUseCase.js'
-import { CreateUserInputModel } from '../../application/user/input-models/createUserInputModel.js'
+import type { CreateUserInputModel } from '../../application/user/input-models/createUserInputModel.js'
 import { ROLE } from '../../domain/user/enums/role.js'
 import { createUserSchema } from '../validators/users/createUserSchema.js'
 import { loginSchema } from '../validators/users/loginSchema.js'
-import { LoginInputModel } from '../../application/user/input-models/loginInputModel.js'
-import { AutenticateUserUseCase } from '../../application/user/use-case/autenticateUserUseCase.js'
 import { InvalidUsersCredentials } from '../../application/common/errors/invalidUsersCredentials.js'
 import { JWTService } from '../../infrastructure/services/jwtService.js'
-import { FindAllUsersUseCase } from '../../application/user/use-case/findAllUsersUseCase.js'
 import { authMiddleware } from '../middlewares/authMiddleware.js'
+import { makeCreateUserUseCase } from '../../application/user/factories/makeCreateUserUseCase.js'
+import { makeAutenticateUserUseCase } from '../../application/user/factories/makeAutenticateUserUseCase.js'
+import { makeFindAllUsersUseCase } from '../../application/user/factories/makeFindAllUsersUseCase.js'
 
 const jwtService = new JWTService()
 const authMiddlewareJwt = authMiddleware(jwtService)
@@ -25,15 +23,14 @@ userRouter.post('/user', authMiddlewareJwt, async (req: Request, res: Response) 
 
     const role = validatedData.role === 'ADMIN' ? ROLE.ADMIN : ROLE.BASIC_USER
 
-    const input = new CreateUserInputModel(
-      validatedData.name,
-      validatedData.email,
-      validatedData.password,
-      validatedData.role ? role : undefined
-    )
+    const input: CreateUserInputModel = {
+      name: validatedData.name,
+      email: validatedData.email,
+      password: validatedData.password,
+      ...(validatedData.role ? { role } : {}),
+    }
 
-    const userRepository = new UserRepository()
-    const createUserUseCase = new CreateUserUseCase(userRepository)
+    const createUserUseCase = makeCreateUserUseCase()
     const userViewModel = await createUserUseCase.execute(input)
 
     return res.status(201).json(userViewModel)
@@ -61,16 +58,9 @@ userRouter.post('/user/login', async (req: Request, res: Response) => {
   try {
     const validatedBody = loginSchema.parse(req.body)
 
-    const input = new LoginInputModel(
-      validatedBody.email,
-      validatedBody.password
-    )
+    const autenticate = makeAutenticateUserUseCase()
 
-    const userRepository = new UserRepository()
-    const jwtService = new JWTService()
-    const autenticate = new AutenticateUserUseCase(userRepository, jwtService)
-
-    const { token } = await autenticate.execute(input.email, input.password)
+    const { token } = await autenticate.execute(validatedBody.email, validatedBody.password)
 
     return res.status(200).send({ token })
   } catch (error) {
@@ -84,8 +74,7 @@ userRouter.post('/user/login', async (req: Request, res: Response) => {
 
 userRouter.get("/user/all-users", authMiddlewareJwt, async (req: Request, res: Response) => {
   try {
-    const userRepository = new UserRepository()
-    const findAllUsersUseCase = new FindAllUsersUseCase(userRepository)
+    const findAllUsersUseCase = makeFindAllUsersUseCase()
     const allUsers = await findAllUsersUseCase.execute()
 
     return res.status(200).json(allUsers)
