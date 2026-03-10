@@ -1,5 +1,5 @@
 import type { IUserRepository } from "../../../domain/user/repositories/iUserRepository.js";
-import { UserViewModel } from "../view-models/userViewModel.js";
+import type { UserViewModel } from "../view-models/userViewModel.js";
 
 export class FindAllUsersUseCase {
   constructor(private userRepository: IUserRepository) { }
@@ -11,6 +11,12 @@ export class FindAllUsersUseCase {
       throw new Error('There is no users.')
     }
 
-    return allUsers.map(user => new UserViewModel(user.id, user.name, user.email, user.role, user.created_at))
+    return allUsers.map(user => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      created_at: user.created_at,
+    }))
   }
 }
