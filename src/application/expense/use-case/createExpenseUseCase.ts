@@ -2,21 +2,39 @@ import { randomUUID } from "node:crypto";
 import { Expense } from "../../../domain/expense/entities/expense.js";
 import type { ExpenseRepository } from "../../../infrastructure/persistence/expense/repository/expenseRepository.js";
 import type { CreateExpenseInputModel } from "../input-models/createExpenseInputModel.js";
-import { CreateExpepenseViewModel } from "../view-models/createExpenseViewModel.js";
+import type { CreateExpepenseViewModel } from "../view-models/createExpenseViewModel.js";
 
 export class CreateExpenseUseCase {
   constructor(private expenseRepository: ExpenseRepository) { }
-  async execute(createExpenseInputModel: CreateExpenseInputModel) {
+  async execute(createExpenseInputModel: CreateExpenseInputModel): Promise<CreateExpepenseViewModel> {
     const isExpenseDuplicated = await this.expenseRepository.findByDescription(createExpenseInputModel.description)
 
     if (isExpenseDuplicated) {
       throw new Error('This expense already exists with the same description')
     }
 
-    const newExpense = new Expense(randomUUID(), createExpenseInputModel.description, createExpenseInputModel.amount, createExpenseInputModel.categoryId, createExpenseInputModel.date, createExpenseInputModel.userId, createExpenseInputModel.status, createExpenseInputModel.notes)
+    const newExpense = new Expense({
+      description: createExpenseInputModel.description,
+      amount: createExpenseInputModel.amount,
+      categoryId: createExpenseInputModel.categoryId,
+      date: createExpenseInputModel.date,
+      userId: createExpenseInputModel.userId,
+      status: createExpenseInputModel.status,
+      ...(createExpenseInputModel.notes !== undefined && { notes: createExpenseInputModel.notes }),
+      created_at: new Date(),
+    }, randomUUID())
 
     const createdExpense = await this.expenseRepository.create(newExpense)
 
-    return new CreateExpepenseViewModel(createdExpense.id, createdExpense.description, createdExpense.amount, createdExpense.categoryId, createdExpense.date, createdExpense.userId, createdExpense.status, createdExpense.notes ?? "")
+    return {
+      id: createdExpense.id,
+      description: createdExpense.description,
+      amount: createdExpense.amount,
+      categoryId: createdExpense.categoryId,
+      date: createdExpense.date,
+      userId: createdExpense.userId,
+      status: createdExpense.status,
+      notes: createdExpense.notes ?? "",
+    }
   }
 }
