@@ -30,14 +30,12 @@ export class CategoryRepository implements ICategoryRepository {
   }
 
   private mapToDomain(prismaCategory: CategoryModel): Category {
-    const category = new Category(
-      prismaCategory.id,
-      prismaCategory.name,
-      prismaCategory.description,
-      prismaCategory.userId,
-      prismaCategory.created_at,
-      prismaCategory.updated_at
-    )
-    return category
+    return new Category({
+      name: prismaCategory.name,
+      description: prismaCategory.description,
+      userId: prismaCategory.userId,
+      created_at: prismaCategory.created_at,
+      updated_at: prismaCategory.updated_at,
+    }, prismaCategory.id)
   }
 }
