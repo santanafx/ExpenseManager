@@ -11,6 +11,8 @@ import { authMiddleware } from '../middlewares/authMiddleware.js'
 import { makeCreateUserUseCase } from '../../application/user/factories/makeCreateUserUseCase.js'
 import { makeAutenticateUserUseCase } from '../../application/user/factories/makeAutenticateUserUseCase.js'
 import { makeFindAllUsersUseCase } from '../../application/user/factories/makeFindAllUsersUseCase.js'
+import { makeDeleteUserUseCase } from '../../application/user/factories/makeDeleteUserUseCase.js'
+import { adminOnly } from '../middlewares/roleMiddleware.js'
 
 const jwtService = new JWTService()
 const authMiddlewareJwt = authMiddleware(jwtService)
@@ -78,6 +80,30 @@ userRouter.get("/user/all-users", authMiddlewareJwt, async (req: Request, res: R
     const allUsers = await findAllUsersUseCase.execute()
 
     return res.status(200).json(allUsers)
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).json({
+        message: error.message
+      })
+    }
+
+    return res.status(500).json({
+      message: 'Internal server error'
+    })
+  }
+})
+
+userRouter.delete('/user/:id', authMiddlewareJwt, adminOnly, async (req: Request<{ id: string }>, res: Response) => {
+  try {
+    const { id } = req.params
+
+    const deleteUserUseCase = makeDeleteUserUseCase()
+    const deletedUser = await deleteUserUseCase.execute({ id })
+
+    return res.status(200).json({
+      message: 'User deleted successfully.',
+      user: deletedUser,
+    })
   } catch (error) {
     if (error instanceof Error) {
       return res.status(400).json({
