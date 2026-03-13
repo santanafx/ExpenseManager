@@ -12,7 +12,10 @@ import { makeCreateUserUseCase } from '../../application/user/factories/makeCrea
 import { makeAutenticateUserUseCase } from '../../application/user/factories/makeAutenticateUserUseCase.js'
 import { makeFindAllUsersUseCase } from '../../application/user/factories/makeFindAllUsersUseCase.js'
 import { makeDeleteUserUseCase } from '../../application/user/factories/makeDeleteUserUseCase.js'
+import { makeUpdateUserUseCase } from '../../application/user/factories/makeUpdateUserUseCase.js'
 import { adminOnly } from '../middlewares/roleMiddleware.js'
+import { updateUserProfileSchema } from '../validators/users/updateUserProfileSchema.js'
+import { updateUserRoleSchema } from '../validators/users/updateUserRoleSchema.js'
 
 const jwtService = new JWTService()
 const authMiddlewareJwt = authMiddleware(jwtService)
@@ -105,6 +108,71 @@ userRouter.delete('/user/:id', authMiddlewareJwt, adminOnly, async (req: Request
       user: deletedUser,
     })
   } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).json({
+        message: error.message
+      })
+    }
+
+    return res.status(500).json({
+      message: 'Internal server error'
+    })
+  }
+})
+
+userRouter.patch('/user/:id', authMiddlewareJwt, async (req: Request<{ id: string }>, res: Response) => {
+  try {
+    const { id } = req.params
+    const validatedData = updateUserProfileSchema.parse(req.body)
+
+    const updateUserUseCase = makeUpdateUserUseCase()
+    const updatedUser = await updateUserUseCase.execute({
+      id,
+      ...(validatedData.name ? { name: validatedData.name } : {}),
+      ...(validatedData.email ? { email: validatedData.email } : {}),
+      ...(validatedData.password ? { password: validatedData.password } : {}),
+    })
+
+    return res.status(200).json(updatedUser)
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: 'Validation error',
+        errors: error.issues
+      })
+    }
+
+    if (error instanceof Error) {
+      return res.status(400).json({
+        message: error.message
+      })
+    }
+
+    return res.status(500).json({
+      message: 'Internal server error'
+    })
+  }
+})
+
+userRouter.patch('/user/:id/role', authMiddlewareJwt, adminOnly, async (req: Request<{ id: string }>, res: Response) => {
+  try {
+    const { id } = req.params
+    const validatedData = updateUserRoleSchema.parse(req.body)
+
+    const role = validatedData.role === 'ADMIN' ? ROLE.ADMIN : ROLE.BASIC_USER
+
+    const updateUserUseCase = makeUpdateUserUseCase()
+    const updatedUser = await updateUserUseCase.execute({ id, role })
+
+    return res.status(200).json(updatedUser)
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: 'Validation error',
+        errors: error.issues
+      })
+    }
+
     if (error instanceof Error) {
       return res.status(400).json({
         message: error.message
