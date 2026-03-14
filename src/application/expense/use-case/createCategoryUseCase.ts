@@ -3,6 +3,7 @@ import { Category } from "../../../domain/expense/entities/category.js";
 import type { ICategoryRepository } from "../../../domain/expense/repositories/iCategoryRepository.js";
 import type { CreateCategoryInputModel } from "../input-models/createCategoryInputModel.js";
 import type { CreateCategoryViewModel } from "../view-models/createCategoryViewModel.js";
+import { AppError } from "../../common/errors/appError.js";
 
 export class CreateCategoryUseCase {
   constructor(private categoryRepository: ICategoryRepository) { }
@@ -11,7 +12,7 @@ export class CreateCategoryUseCase {
     const isCategoryNameDuplicated = await this.categoryRepository.findByName(createCategoryInputModel.name)
 
     if (isCategoryNameDuplicated) {
-      throw new Error('Category name already exists.')
+      throw new AppError(400, 'Category name already exists.')
     }
 
     const category = new Category({
