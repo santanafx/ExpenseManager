@@ -16,6 +16,12 @@ interface ExpenseProps {
 export class Expense extends Entity<ExpenseProps> {
   constructor(props: ExpenseProps, id: string) {
     super(props, id)
+    if (!props.description || props.description.trim().length === 0) {
+      throw new Error('Description cannot be empty')
+    }
+    if (props.amount <= 0) {
+      throw new Error('Amount must be positive')
+    }
   }
 
   get description(): string { return this.props.description }
