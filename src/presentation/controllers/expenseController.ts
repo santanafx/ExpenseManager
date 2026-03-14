@@ -1,21 +1,16 @@
-import { Router, type Request, type Response } from "express";
+import { Router, type Request, type Response, type NextFunction } from "express";
 import { adminOnly } from "../middlewares/roleMiddleware.js";
 import { createExpenseCategorySchema } from "../validators/expenses/createExpenseCategorySchema.js";
 import { createExpenseSchema } from "../validators/expenses/createExpenseSchema.js";
 import type { CreateCategoryInputModel } from "../../application/expense/input-models/createCategoryInputModel.js";
 import type { CreateExpenseInputModel } from "../../application/expense/input-models/createExpenseInputModel.js";
-import z from "zod";
-import { JWTService } from "../../infrastructure/services/jwtService.js";
-import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { authMiddlewareJwt } from "../middlewares/authMiddleware.js";
 import { makeCreateExpenseUseCase } from "../../application/expense/factories/makeCreateExpenseUseCase.js";
 import { makeCreateCategoryUseCase } from "../../application/expense/factories/makeCreateCategoryUseCase.js";
 
-const jwtService = new JWTService()
-const authMiddlewareJwt = authMiddleware(jwtService)
-
 export const expenseRouter = Router()
 
-expenseRouter.post('/expense', authMiddlewareJwt, async (req: Request, res: Response) => {
+expenseRouter.post('/expense', authMiddlewareJwt, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const validatedExpense = createExpenseSchema.parse(req.body)
 
@@ -34,26 +29,11 @@ expenseRouter.post('/expense', authMiddlewareJwt, async (req: Request, res: Resp
 
     return res.status(201).json(expenseViewModel)
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({
-        message: 'Validation error',
-        errors: error.issues
-      })
-    }
-
-    if (error instanceof Error) {
-      return res.status(400).json({
-        message: error.message
-      })
-    }
-
-    return res.status(500).json({
-      message: 'Internal server error'
-    })
+    next(error)
   }
 })
 
-expenseRouter.post('/expense/category', authMiddlewareJwt, adminOnly, async (req: Request, res: Response) => {
+expenseRouter.post('/expense/category', authMiddlewareJwt, adminOnly, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const validatedCategory = createExpenseCategorySchema.parse(req.body)
 
@@ -68,21 +48,6 @@ expenseRouter.post('/expense/category', authMiddlewareJwt, adminOnly, async (req
 
     return res.status(201).json(categoryViewModel)
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({
-        message: 'Validation error',
-        errors: error.issues
-      })
-    }
-
-    if (error instanceof Error) {
-      return res.status(400).json({
-        message: error.message
-      })
-    }
-
-    return res.status(500).json({
-      message: 'Internal server error'
-    })
+    next(error)
   }
 })
