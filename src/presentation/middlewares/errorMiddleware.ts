@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express'
 import { ZodError } from 'zod'
+import { AppError } from '../../application/common/errors/appError.js'
 
 export function errorMiddleware(
   error: Error,
@@ -12,6 +13,10 @@ export function errorMiddleware(
     return res.status(400).send({
       message: 'Validation error.', issues: error.format()
     })
+  }
+
+  if (error instanceof AppError) {
+    return res.status(error.statusCode).send({ message: error.message })
   }
 
   if (process.env.NODE_ENV !== 'production') {
