@@ -1,9 +1,9 @@
 import type { Request, Response, NextFunction } from 'express'
-import { Role } from '../../infrastructure/persistence/prisma/generated/enums.js'
+import { ROLE } from '../../domain/user/enums/role.js'
 
-export function roleMiddleware(...allowedRoles: Role[]) {
+export function roleMiddleware(...allowedRoles: ROLE[]) {
   return (req: Request, res: Response, next: NextFunction) => {
-    const userRole = req.user?.role as Role | undefined
+    const userRole = req.user?.role as ROLE | undefined
 
     if (!userRole) {
       return res.status(403).send({ message: 'Access denied: role not found' })
@@ -17,4 +17,4 @@ export function roleMiddleware(...allowedRoles: Role[]) {
   }
 }
 
-export const adminOnly = roleMiddleware(Role.ADMIN)
+export const adminOnly = roleMiddleware(ROLE.ADMIN)
