@@ -1,16 +1,17 @@
 import { randomUUID } from "node:crypto";
 import { Expense } from "../../../domain/expense/entities/expense.js";
-import type { ExpenseRepository } from "../../../infrastructure/persistence/expense/repository/expenseRepository.js";
+import type { IExpenseRepository } from "../../../domain/expense/repositories/iExpenseRepository.js";
 import type { CreateExpenseInputModel } from "../input-models/createExpenseInputModel.js";
 import type { CreateExpepenseViewModel } from "../view-models/createExpenseViewModel.js";
+import { AppError } from "../../common/errors/appError.js";
 
 export class CreateExpenseUseCase {
-  constructor(private expenseRepository: ExpenseRepository) { }
+  constructor(private expenseRepository: IExpenseRepository) { }
   async execute(createExpenseInputModel: CreateExpenseInputModel): Promise<CreateExpepenseViewModel> {
     const isExpenseDuplicated = await this.expenseRepository.findByDescription(createExpenseInputModel.description)
 
     if (isExpenseDuplicated) {
-      throw new Error('This expense already exists with the same description')
+      throw new AppError(400, 'This expense already exists with the same description')
     }
 
     const newExpense = new Expense({
