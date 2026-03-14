@@ -3,6 +3,7 @@ import { User } from '../../../domain/user/entities/user.js'
 import type { UpdateUserInputModel } from '../input-models/updateUserInputModel.js'
 import type { UpdateUserViewModel } from '../view-models/updateUserViewModel.js'
 import bcrypt from 'bcryptjs'
+import { AppError } from '../../common/errors/appError.js'
 
 export class UpdateUserUseCase {
   constructor(private userRepository: IUserRepository) { }
@@ -10,13 +11,13 @@ export class UpdateUserUseCase {
   async execute(input: UpdateUserInputModel): Promise<UpdateUserViewModel> {
     const existingUser = await this.userRepository.findById(input.id)
     if (!existingUser) {
-      throw new Error('User not found')
+      throw new AppError(404, 'User not found')
     }
 
     if (input.email && input.email !== existingUser.email) {
       const emailInUse = await this.userRepository.findByEmail(input.email)
       if (emailInUse) {
-        throw new Error('Email already in use')
+        throw new AppError(400, 'Email already in use')
       }
     }
 
