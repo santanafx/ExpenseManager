@@ -7,10 +7,6 @@ export class FindAllUsersUseCase {
   async execute(): Promise<UserViewModel[]> {
     const allUsers = await this.userRepository.findAll()
 
-    if (!allUsers) {
-      throw new Error('There is no users.')
-    }
-
     return allUsers.map(user => ({
       id: user.id,
       name: user.name,
