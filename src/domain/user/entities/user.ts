@@ -16,6 +16,12 @@ export class User extends Entity<UserProps> {
     if (!props.name || props.name.trim().length === 0) {
       throw new Error('Name cannot be empty')
     }
+    if (!props.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(props.email)) {
+      throw new Error('Invalid email format')
+    }
+    if (!props.password_hash || props.password_hash.trim().length === 0) {
+      throw new Error('Password hash cannot be empty')
+    }
   }
 
   get name(): string { return this.props.name }
