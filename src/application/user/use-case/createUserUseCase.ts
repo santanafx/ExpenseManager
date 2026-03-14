@@ -5,6 +5,7 @@ import type { CreateUserInputModel } from '../input-models/createUserInputModel.
 import type { UserViewModel } from '../view-models/userViewModel.js'
 import { randomUUID } from 'node:crypto'
 import bcrypt from 'bcryptjs'
+import { AppError } from '../../common/errors/appError.js'
 
 export class CreateUserUseCase {
   constructor(private userRepository: IUserRepository) { }
@@ -12,7 +13,7 @@ export class CreateUserUseCase {
   async execute(input: CreateUserInputModel): Promise<UserViewModel> {
     const existingUser = await this.userRepository.findByEmail(input.email)
     if (existingUser) {
-      throw new Error('Email already in use')
+      throw new AppError(400, 'Email already in use')
     }
 
     const password_hash = await bcrypt.hash(input.password, 10)
