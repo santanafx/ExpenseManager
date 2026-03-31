@@ -1,12 +1,8 @@
 # Project Documentation — DDD + Clean Architecture (English)
 
-This document describes the architecture, design choices, modeling steps, patterns, technologies, and recommended backend skills for the ExpenseManager project. It is written for developers, reviewers, and recruiters who want a concise but complete understanding of the project organization and the engineering choices behind it.
+This document describes the architecture, design choices, modeling steps, patterns, technologies, and recommended backend skills for the ExpenseManager project. It is written for developers and reviewers who want a concise but complete understanding of the project organization and the engineering choices behind it.
 
-**Audience**: backend developers, architects, technical recruiters.
-
-**Scope**: high-level system overview, folder responsibilities, Domain-Driven Design (DDD) concepts used, Clean Architecture and SOLID application, data modeling steps (including bounded contexts), design patterns and dependency injection, technologies adopted, and a recruiter-focused "skills" checklist.
-
-**Note**: This file is a translated and expanded English version of the original project notes describing the `user` domain and general architecture.
+**Scope**: high-level system overview, folder responsibilities, Domain-Driven Design (DDD) concepts used, Clean Architecture and SOLID application, data modeling steps (including bounded contexts), design patterns and dependency injection and technologies adopted.
 
 **System Overview**
 
@@ -212,7 +208,7 @@ npx prisma migrate dev --name init
 npm run dev
 ```
 
-**Next steps & recommended improvements**
+**Next steps**
 
 1. Add more use cases: `GetUserById`, `UpdateUser`, `DeleteUser`, `ListUsers`, `ExportExpenses`.
 2. Add end-to-end tests for critical user and expense flows.
