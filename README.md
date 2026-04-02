@@ -16,6 +16,7 @@ This document describes the architecture, design choices, modeling steps, patter
 - Create / update / delete / list expenses and categories.
 - Authorization and RBAC (role-based access control).
 - Input validation and structured error handling.
+- Interactive API documentation via Swagger UI (OpenAPI 3.0).
 
 **Repository structure (short)**
 
@@ -199,14 +200,28 @@ export function makeCreateUserUseCase() {
 - **Linting / Formatting**: ESLint + Prettier
 - **Testing**: Jest or Vitest + Supertest for integration tests (recommended)
 - **Container**: Docker / docker-compose (development database)
+- **API Docs**: swagger-ui-express + @asteasolutions/zod-to-openapi (OpenAPI 3.0, auto-generated from Zod schemas)
 
 **Developer workflow (quick commands)**
 
 ```bash
 npm install
+npx prisma generate
 npx prisma migrate dev --name init
 npm run dev
 ```
+
+**API Documentation (Swagger UI)**
+
+After starting the server, the interactive API documentation is available at:
+
+```
+http://localhost:3333/docs
+```
+
+The spec is generated automatically from the existing Zod validation schemas using `@asteasolutions/zod-to-openapi`. All 8 endpoints are documented with request bodies, path parameters, response shapes and JWT Bearer authentication support — click **Authorize** in the Swagger UI to set the token before testing protected routes.
+
+The documentation source is located at `src/presentation/docs/swaggerConfig.ts`. When you add or change a Zod schema, the Swagger UI reflects the change automatically on the next server start.
 
 **Next steps**
 
